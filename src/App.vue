@@ -2,15 +2,15 @@
   <v-app>
     <v-app-bar
       app
-      color="primary"
-      dark
+      color="secondary"
+      light
     >
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
           class="shrink mr-2"
           contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          src="@/assets/logo.png"
           transition="scale-transition"
           width="40"
         />
@@ -27,30 +27,27 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
+      <blockquote
+        class="font-weight-bold"
       >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+        Fuel Cost
+      </blockquote>
     </v-app-bar>
 
     <v-content>
-      <HelloWorld/>
+      <Calculation/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import Calculation from './components/Calculation';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    Calculation,
   },
 
   data: () => ({
