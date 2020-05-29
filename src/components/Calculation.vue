@@ -33,14 +33,14 @@
     >
       <v-text-field
         v-model="log.refuel"
-        :rules="numberRules"
+        :rules="refuelRules"
         label="Refuel(l)"
         class="ml-5 mr-5"
         required
       ></v-text-field>
       <v-text-field
         v-model="log.distance"
-        :rules="numberRules"
+        :rules="distanceRules"
         label="Distance(km)"
         class="ml-5 mr-5 mb-5"
         required
@@ -75,14 +75,14 @@
         >
           <v-text-field
             v-model="editLog.refuel"
-            :rules="numberRules"
+            :rules="refuelRules"
             label="Refuel(l)"
             class="ml-3 mr-3"
             required
           ></v-text-field>
           <v-text-field
             v-model="editLog.distance"
-            :rules="numberRules"
+            :rules="distanceRules"
             label="Distance(km)"
             class="ml-3 mr-3 mb-3"
             required
@@ -111,7 +111,7 @@
           all logs permanently?
         </p>
         <v-btn
-          @click="dialog = false;"
+          @click="dialog = false; action = null"
           class="ml-5 mb-5"
         >
           back
@@ -146,10 +146,15 @@
           distance: null,
           timestamp: null
         },
-        numberRules: [
+        refuelRules: [
           v => !!v || 'Required',
           v => (v && !isNaN(v)) || 'Number only',
         ],
+        distanceRules: [
+          v => !!v || 'Required',
+          v => (v && !isNaN(v) && v > this.previousDistance) || 'Must be longer than previous distance',
+        ],
+        previousDistance: null,
         valid: false,
         dialog: false,
         action: null,
@@ -175,20 +180,25 @@
         this.logs[id] = this.editLog
         localStorage.setItem(this.key, JSON.stringify(this.logs))
         this.dialog = false
+        this.action = null
       },
       deleteLog(id) {
         delete this.logs[id]
         localStorage.setItem(this.key, JSON.stringify(this.logs))
         this.dialog = false
+        this.action = null
       },
       clearLogs() {
         localStorage.removeItem(this.key)
         this.logs = JSON.parse(localStorage.getItem(this.key))
         this.dialog = false
+        this.action = null
       },
     },
     mounted () {
       this.logs = JSON.parse(localStorage.getItem(this.key))
+      this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
+      console.log(this.previousDistance)
     }
   }
 </script>
