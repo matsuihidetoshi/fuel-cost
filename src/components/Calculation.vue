@@ -229,13 +229,10 @@
         this.previousDistance = null
       },
       calculate() {
-        console.log('calculate')
         Object.keys(this.logs).forEach(key => {
-          console.log('roop')
           if (this.logs[key].previousLogId) {
             let diff = this.logs[key].distance - this.logs[this.logs[key].previousLogId].distance
             this.logs[key].ratio = diff / this.logs[key].refuel
-            console.log(this.logs[key].ratio)
           }
         })
       },
