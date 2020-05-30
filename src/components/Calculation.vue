@@ -2,7 +2,6 @@
   <v-container>
     <v-row class="text-center">
       <v-col cols="12">
-        <h2>{{ previousDistance }}</h2>
         <h1>Fuel Cost Log</h1>
       </v-col>
       <v-col
@@ -24,12 +23,14 @@
             target = id;
             dialog = true;
             action = 0;
-            editLog = log
+            editLog = log;
+            previousDistance = logs[log.previousLogId].distance;
           "
         >
           <p>{{ log.timestamp }}</p>
           <p>Refuel: {{ log.refuel }}</p>
           <p>Distance: {{ log.distance }}</p>
+          <p>Ratio: {{ log.ratio }}</p>
         </v-card>
       </v-col>
     </v-row>
@@ -117,7 +118,11 @@
           all logs permanently?
         </p>
         <v-btn
-          @click="dialog = false; action = null"
+          @click="
+            dialog = false;
+            action = null;
+            setPreviousDistance()
+          "
           class="ml-5 mb-5"
         >
           back
@@ -146,13 +151,15 @@
           previousLogId: null,
           refuel: null,
           distance: null,
-          timestamp: null
+          timestamp: null,
+          ratio: null
         },
         editLog: {
           previousLogId: null,
           refuel: null,
           distance: null,
-          timestamp: null
+          timestamp: null,
+          ratio: null
         },
         refuelRules: [
           v => !!v || 'Required',
@@ -160,7 +167,7 @@
         ],
         distanceRules: [
           v => !!v || 'Required',
-          v => (v && !isNaN(v) && v > this.previousDistance) || 'Must be longer than previous distance',
+          v => (v && !isNaN(v) && v > Number(this.previousDistance)) || 'Must be longer than previous distance',
         ],
         previousDistance: null,
         valid: false,
@@ -187,12 +194,14 @@
         this.logs = JSON.parse(localStorage.getItem(this.key))
         this.valid = false
         this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
+        this.calculate()
       },
       updateLog(id) {
         this.logs[id] = this.editLog
         localStorage.setItem(this.key, JSON.stringify(this.logs))
         this.dialog = false
         this.action = null
+        this.calculate()
       },
       deleteLog(id) {
         Object.keys(this.logs).forEach(key => {
@@ -209,6 +218,7 @@
         } else {
           this.previousDistance = null
         }
+        this.calculate()
       },
       clearLogs() {
         localStorage.removeItem(this.key)
@@ -218,14 +228,33 @@
         this.valid = false
         this.previousDistance = null
       },
+      calculate() {
+        console.log('calculate')
+        Object.keys(this.logs).forEach(key => {
+          console.log('roop')
+          if (this.logs[key].previousLogId) {
+            let diff = this.logs[key].distance - this.logs[this.logs[key].previousLogId].distance
+            this.logs[key].ratio = diff / this.logs[key].refuel
+            console.log(this.logs[key].ratio)
+          }
+        })
+      },
+      setPreviousDistance(){
+        if (Object.keys(this.logs).length > 0) {
+          this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
+        } else {
+          this.previousDistance = null
+        }
+      }
     },
-    mounted () {
+    mounted() {
       this.logs = JSON.parse(localStorage.getItem(this.key))
       if (Object.keys(this.logs).length > 0) {
         this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
       } else {
         this.previousDistance = null
       }
+      this.calculate()
     }
   }
 </script>
