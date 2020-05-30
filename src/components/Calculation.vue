@@ -2,6 +2,7 @@
   <v-container>
     <v-row class="text-center">
       <v-col cols="12">
+        <h2>{{ previousDistance }}</h2>
         <h1>Fuel Cost Log</h1>
       </v-col>
       <v-col
@@ -11,6 +12,11 @@
         justify="center"
         style="height: 300px"
       >
+        <v-card
+          v-if="!logs"
+        >
+          No Logs
+        </v-card>
         <v-card
           v-for="(log, id) in logs"
           v-bind:key="id"
@@ -137,11 +143,13 @@
         key: 'fuel-cost-data-log-280399f321b0037c605b7c47699bfe83',
         logs: null,
         log: {
+          previousLogId: null,
           refuel: null,
           distance: null,
           timestamp: null
         },
         editLog: {
+          previousLogId: null,
           refuel: null,
           distance: null,
           timestamp: null
@@ -171,6 +179,8 @@
         var id = log.timestamp.getTime()
         if (!logs) {
           logs = {}
+        } else {
+          log.previousLogId = Object.keys(this.logs)[Object.keys(this.logs).length - 1]
         }
         logs[id] = log
         localStorage.setItem(this.key, JSON.stringify(logs))
@@ -185,22 +195,37 @@
         this.action = null
       },
       deleteLog(id) {
+        Object.keys(this.logs).forEach(key => {
+          if (this.logs[key].previousLogId == id) {
+            this.logs[key].previousLogId = this.logs[id].previousLogId
+          }
+        })
         delete this.logs[id]
         localStorage.setItem(this.key, JSON.stringify(this.logs))
         this.dialog = false
         this.action = null
+        if (Object.keys(this.logs).length > 0) {
+          this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
+        } else {
+          this.previousDistance = null
+        }
       },
       clearLogs() {
         localStorage.removeItem(this.key)
         this.logs = JSON.parse(localStorage.getItem(this.key))
         this.dialog = false
         this.action = null
+        this.valid = false
         this.previousDistance = null
       },
     },
     mounted () {
       this.logs = JSON.parse(localStorage.getItem(this.key))
-      this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
+      if (Object.keys(this.logs).length > 0) {
+        this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
+      } else {
+        this.previousDistance = null
+      }
     }
   }
 </script>
