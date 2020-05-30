@@ -175,6 +175,8 @@
         logs[id] = log
         localStorage.setItem(this.key, JSON.stringify(logs))
         this.logs = JSON.parse(localStorage.getItem(this.key))
+        this.valid = false
+        this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
       },
       updateLog(id) {
         this.logs[id] = this.editLog
@@ -193,12 +195,12 @@
         this.logs = JSON.parse(localStorage.getItem(this.key))
         this.dialog = false
         this.action = null
+        this.previousDistance = null
       },
     },
     mounted () {
       this.logs = JSON.parse(localStorage.getItem(this.key))
       this.previousDistance = this.logs[Object.keys(this.logs)[Object.keys(this.logs).length - 1]].distance
-      console.log(this.previousDistance)
     }
   }
 </script>
