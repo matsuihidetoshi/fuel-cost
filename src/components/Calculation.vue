@@ -13,6 +13,7 @@
       >
         <v-card
           v-if="!logs"
+          class="pa-2"
         >
           No Logs
         </v-card>
